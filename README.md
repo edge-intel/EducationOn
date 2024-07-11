@@ -53,7 +53,7 @@ A summary of operations will be displayed, showing the status for each user.
 
 ## License
 
-**MIT License
+MIT License
 
 Copyright (c) 2024 Edge-Intel.com
 
