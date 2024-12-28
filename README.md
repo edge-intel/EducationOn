@@ -12,7 +12,7 @@ Summary Report: Provides a summary of operations and their success or failure st
 ## Usage
 
 ### Clone or Download the Repository:
-    git clone https://github.com/yourusername/redirect-folders-script.git
+    git clone https://github.com/cocoon-ccig/redirect-folders-script.git
 
 Or download the ZIP file from the repository page and extract it.
 
