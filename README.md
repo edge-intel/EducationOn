@@ -1,57 +1,112 @@
+
 # EducationOn — Toolkit for School IT Admins
 
-# **Redirect Folders Script**
-## Overview
+> Practical, low-overhead scripts and guides to keep school computer labs and teacher devices running smoothly.
 
-This script is designed to redirect user folders such as Desktop and Documents to local paths on each machine. It aims to mitigate the need for more sophisticated Active Directory functions by providing a simple, yet effective solution for environments like schools, where students may use the same user accounts on multiple PCs.
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](#license)
+[![Platform](https://img.shields.io/badge/Platform-Windows-blue.svg)](#)
+[![Audience](https://img.shields.io/badge/Audience-K12%20IT%20Admins-8A2BE2.svg)](#)
 
-## Features
-Admin Privileges: Ensures the script runs with elevated privileges.
-Multiple Users: Allows the script to be applied to multiple users in one run.
-Folder Redirection Options: Choose to redirect Desktop, Documents, or both.
-Summary Report: Provides a summary of operations and their success or failure status.
+**EducationOn** provides small, auditable tools for common administrative tasks in school environments—especially where students share PCs and accounts, and where you need quick wins without a full AD/Intune rollout.
 
-## Usage
+---
 
-### Clone or Download the Repository:
-    git clone https://github.com/cocoon-ccig/redirect-folders-script.git
+## 📂 What’s inside
 
-Or download the ZIP file from the repository page and extract it.
+- **RedirectFolders.bat**  
+  Redirects user shell folders (e.g., *Desktop*, *Documents*) to local paths per machine—useful for shared accounts and fast lab resets. Runs with elevation and prints a summary at the end.
 
-### Run the Script:
-Right-click on the RedirectFolders.bat file and select "Run as administrator".
-Follow the on-screen prompts to enter target usernames and redirection choices.
+- **WinUpdateServ.bat** (+ `readme-WinUpdateServ.txt`)  
+  Helper script for handling Windows Update service behavior in lab/classroom scenarios. See the companion `readme-WinUpdateServ.txt` for usage and caveats.
 
-### Follow Prompts:
-The script will check for administrative privileges.
-The script will list all users on the system.
-Enter the usernames of the users you want to apply the script for, separated by spaces.
-Choose which folders to redirect: Desktop only, Documents only, or both.
+- **link to QRCode.xlsx**  
+  Spreadsheet template for generating QR codes (e.g., Wi-Fi join links, classroom rules, support contacts).
 
-### Review Summary:
-After the script completes, a summary of operations will be displayed, indicating success or failure for each user.
+- **tools/**  
+  Staging area for additional scripts/utilities (to be documented as they are added).
 
-## Example
+---
 
-Here is a sample usage scenario:
+## 🎯 Why this exists (School context)
 
-###     Run as Administrator:
-Launch the script with elevated privileges.
-The script will verify that it is running with administrative privileges.
+- **Shared PCs & rotating users** — Keep student data local/per-device to avoid profile bloat and speed up logons.  
+- **Minimal infra required** — Helpful where there is no domain controller or where GPO/Intune isn’t feasible across all sites.  
+- **Auditable & simple** — Plain batch scripts that can be inspected, adapted, or rewritten in PowerShell.  
 
-###     Enter Target Usernames:
-Input the usernames of the users you want to redirect folders for (e.g., user1 user2 user3).
+---
 
-###     Choose Redirection Options:
-Select which folders to redirect: Desktop only, Documents only, or both.
+## 🚀 Quick start
 
-###     Script Execution:
-The script will create local Desktop and Documents folders for each user if they don't already exist.
-It will copy existing contents from the current user folders to the local paths.
-The script updates the registry to point the user folders to the new local paths.
+1. **Clone or download**
+   ```bash
+   git clone https://github.com/edge-intel/EducationOn
+   ```
+   Or download as ZIP from GitHub.
 
-###     Summary Report:
-A summary of operations will be displayed, showing the status for each user.
+2. **Run as Administrator**  
+   - Right-click the script (`RedirectFolders.bat` or `WinUpdateServ.bat`) → **Run as administrator**.  
+   - Follow on-screen prompts.
+
+3. **Test on a pilot PC first**  
+   Validate behavior with a non-critical machine (or VM) before broad rollout.
+
+> 💡 Tip: create a local admin-only USB with the scripts + a small change log so techs can execute consistent steps in classrooms.
+
+---
+
+## 🛠 Usage notes
+
+### RedirectFolders.bat
+- **What it does**: Lists users on the device, lets you choose targets, then redirects selected folders (Desktop/Documents) to local machine paths. Copies existing content and updates the registry mappings.  
+- **Good for**: Shared accounts, exam stations, low-bandwidth sites, and quick “reset” workflows.  
+- **Log/summary**: The script prints a success/failure summary at the end.  
+
+### WinUpdateServ.bat
+- **What it does**: Assists with Windows Update service behavior for lab PCs.  
+- **Documentation**: See `readme-WinUpdateServ.txt` for exact switches, modes, and safeguards.  
+- **Important**: Changes to Windows Update can have security implications—ensure compliance with your school’s patch policy.
+
+### link to QRCode.xlsx
+- **Ituitive usage just look inside the file**
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repo, create a feature branch, and commit small, reviewable changes.  
+2. Include **before/after notes** and screenshots/log snippets where relevant.  
+3. Open a PR with:  
+   - Purpose of the change  
+   - Test steps / rollback instructions  
+   - Any policy or security implications  
+
+---
+
+## 🔐 Disclaimer
+
+These scripts are provided **as-is**, without warranty of any kind.  
+They make changes to user folders and/or Windows services — **always test first on non-production machines**.  
+By using them, you accept full responsibility for outcomes in your environment.
+
+---
+
+## 📜 License
+
+This project is licensed under the **MIT License**. See [`LICENSE`](./LICENSE).
+
+---
+
+## 🌐 Links
+
+- Project site: [https://education-on.org](https://education-on.org)  
+- Issues & support: use [GitHub Issues](../../issues) to report bugs or request features
+
+
+## 🇵🇹 Nota final (PT)
+
+Este repositório destina-se a equipas de TI escolares que precisam de soluções simples e auditáveis para gerir parques informáticos partilhados.  
+Se tiveres sugestões ou scripts úteis, contribui com um PR ou abre um *issue*. Obrigado!
+
 
 ## License
 
