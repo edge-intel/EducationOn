@@ -67,7 +67,7 @@
 - **Important**: Changes to Windows Update can have security implications—ensure compliance with your school’s patch policy.
 
 ### link to QRCode.xlsx
-- **Ituitive usage just look inside the file**
+- **Intuitive usage just look inside the file**
 
 ---
 
