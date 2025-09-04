@@ -1,0 +1,188 @@
+diff --git a/README.md b/README.md
+index 1111111..2222222 100644
+--- a/README.md
++++ b/README.md
+@@
+ ## Educação Digital e Ferramentas
+ 
+ Este repositório reúne exemplos, scripts e recursos úteis para a transformação digital em contexto escolar.
++
++## 🖥️ Script para criação de utilizadores locais no Windows
++
++No diretório [`scripts/`](scripts/) está disponível o ficheiro **`CreateLocalUsers.ps1`**, que permite criar utilizadores locais em máquinas Windows (versões Home ou sem AD), a partir de um ficheiro de pares `user:pass`.
++
++### Como usar
++
++1. Crie um ficheiro `userlist.txt` com o seguinte formato:
++   ```
++   maria:Pass123!
++   joao:Senha456!
++   ana:MySecret789
++   ```
++
++2. Abra o **PowerShell como Administrador**.
++
++3. Execute o script:
++   ```powershell
++   Set-ExecutionPolicy RemoteSigned -Scope Process -Force
++   .\scripts\CreateLocalUsers.ps1
++   ```
++
++4. O script irá:
++   - Perguntar o caminho para o ficheiro `userlist.txt`.
++   - Criar todos os utilizadores com permissões **standard** (grupo `Users`).
++   - Perguntar se algum utilizador da lista deve ser promovido a **Administrador**.
++   - Apresentar um resumo final com o resultado.
++
++### Exemplo de output
++
++```
++############################################################
++#     SCRIPT DE CRIAÇÃO DE UTILIZADORES LOCAIS (WIN)       #
++############################################################
++
++✔ Ficheiro encontrado: C:\Users\Public\userlist.txt
++
++[1/3] A processar linha: maria:Pass123!
++✔ Utilizador 'maria' criado com sucesso (grupo: Users).
++
++=== Atribuir permissões de Administrador ===
++✔ 'joao' promovido a Administrador.
++
++############################################################
++#                   RESUMO DA EXECUÇÃO                     #
++############################################################
++Utilizadores criados : 3
++Ignorados            : 0
++Erros na criação     : 0
++Promovidos a admin   : 1
++```
+diff --git a/scripts/CreateLocalUsers.ps1 b/scripts/CreateLocalUsers.ps1
+new file mode 100644
+index 0000000..3333333
+--- /dev/null
++++ b/scripts/CreateLocalUsers.ps1
+@@
++# CreateLocalUsers.ps1
++# Script interativo para criar utilizadores locais a partir de user:pass
++# Inclui banners azuis, resumo final e opção de promover alguns utilizadores a administradores
++
++function Show-Banner($text) {
++    Write-Host ""
++    Write-Host "############################################################" -ForegroundColor White -BackgroundColor DarkBlue
++    Write-Host "#                                                          #" -ForegroundColor White -BackgroundColor DarkBlue
++    $padding = (60 - $text.Length) / 2
++    $line = (" " * [Math]::Floor($padding)) + $text + (" " * [Math]::Ceiling($padding))
++    Write-Host "#$line#" -ForegroundColor White -BackgroundColor DarkBlue
++    Write-Host "#                                                          #" -ForegroundColor White -BackgroundColor DarkBlue
++    Write-Host "############################################################" -ForegroundColor White -BackgroundColor DarkBlue
++    Write-Host ""
++}
++
++# Banner inicial
++Clear-Host
++Show-Banner "SCRIPT DE CRIAÇÃO DE UTILIZADORES LOCAIS"
++
++# Perguntar pelo ficheiro
++$UserListFile = Read-Host "Indique o caminho completo do ficheiro (ex: C:\Users\Public\userlist.txt)"
++
++if (-Not (Test-Path $UserListFile)) {
++    Write-Host "❌ Ficheiro não encontrado: $UserListFile" -ForegroundColor Red
++    exit
++}
++
++Write-Host "✔ Ficheiro encontrado: $UserListFile" -ForegroundColor Green
++Write-Host ""
++
++# Perguntar pelos utilizadores que devem ser admins
++$adminInput = Read-Host "Indique os utilizadores (separados por vírgulas) que devem ser administradores (ou deixe vazio para nenhum)"
++$adminList = @()
++if (-not [string]::IsNullOrWhiteSpace($adminInput)) {
++    $adminList = $adminInput.Split(",") | ForEach-Object { $_.Trim() } | Where-Object { $_ -ne "" }
++}
++
++Write-Host "----------------------------------------------"
++
++# Contadores
++$created = 0
++$skipped = 0
++$errors = 0
++$promoted = 0
++$adminErrors = @()
++
++# Ler e processar cada linha
++$lines = Get-Content $UserListFile
++$total = $lines.Count
++$index = 1
++
++foreach ($line in $lines) {
++    Write-Host "[$index/$total] A processar linha: $line" -ForegroundColor Yellow
++
++    try {
++        $parts = $line.Split(":")
++        $username = $parts[0].Trim()
++        $password = $parts[1].Trim()
++
++        if ([string]::IsNullOrWhiteSpace($username) -or [string]::IsNullOrWhiteSpace($password)) {
++            Write-Host "⚠ Linha inválida: '$line' - ignorada." -ForegroundColor DarkYellow
++            $skipped++
++        }
++        elseif (Get-LocalUser -Name $username -ErrorAction SilentlyContinue) {
++            Write-Host "ℹ Utilizador '$username' já existe - ignorado." -ForegroundColor Gray
++            $skipped++
++        }
++        else {
++            $securePass = ConvertTo-SecureString $password -AsPlainText -Force
++            New-LocalUser -Name $username -Password $securePass -FullName $username -Description "Conta criada por script"
++            Add-LocalGroupMember -Group "Users" -Member $username
++            Write-Host "✔ Utilizador '$username' criado com sucesso (grupo: Users)." -ForegroundColor Green
++            $created++
++        }
++    }
++    catch {
++        Write-Host "❌ Erro ao criar '$username' -> $($_.Exception.Message)" -ForegroundColor Red
++        $errors++
++    }
++
++    $index++
++}
++
++# Promover admins
++if ($adminList.Count -gt 0) {
++    Write-Host ""
++    Write-Host "=== Atribuir permissões de Administrador ===" -ForegroundColor Cyan
++    foreach ($adminUser in $adminList) {
++        if (Get-LocalUser -Name $adminUser -ErrorAction SilentlyContinue) {
++            try {
++                Add-LocalGroupMember -Group "Administrators" -Member $adminUser -ErrorAction Stop
++                Write-Host "✔ '$adminUser' promovido a Administrador." -ForegroundColor Green
++                $promoted++
++            }
++            catch {
++                Write-Host "❌ Erro ao promover '$adminUser' -> $($_.Exception.Message)" -ForegroundColor Red
++                $adminErrors += $adminUser
++            }
++        }
++        else {
++            Write-Host "❌ Utilizador '$adminUser' não encontrado - não foi promovido." -ForegroundColor Red
++            $adminErrors += $adminUser
++        }
++    }
++}
++
++# Banner final com resumo
++Show-Banner "RESUMO DA EXECUÇÃO"
++
++Write-Host "Utilizadores criados : $created" -ForegroundColor Green
++Write-Host "Ignorados            : $skipped" -ForegroundColor Yellow
++Write-Host "Erros na criação     : $errors" -ForegroundColor Red
++Write-Host "Promovidos a admin   : $promoted" -ForegroundColor Cyan
++
++if ($adminErrors.Count -gt 0) {
++    Write-Host "Não foi possível promover os seguintes a admin:" -ForegroundColor Red
++    $adminErrors | ForEach-Object { Write-Host " - $_" -ForegroundColor Red }
++}
++
++Write-Host "----------------------------------------------"
++Write-Host "Fim do script." -ForegroundColor Cyan
++Write-Host ""
