@@ -1,4 +1,4 @@
-a# CreateLocalUsers.ps1
+# CreateLocalUsers.ps1
 # Script interativo para criar utilizadores locais a partir de user:pass
 # Inclui banners azuis, resumo final e opcao de promover alguns utilizadores a administradores
 
