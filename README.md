@@ -83,7 +83,6 @@ This project is licensed under the MIT License. See LICENSE.
 
 ## Links
 
-Project site: https://education-on.org
 Issues and support: use GitHub Issues to report bugs or request features
 
 ## Nota final (PT)
