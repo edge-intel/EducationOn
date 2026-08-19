@@ -1,0 +1,10 @@
+# Example only - do NOT commit real usernames/passwords here.
+# Format: username:password  (one per line)
+#
+# Copy this file to userlist.txt, fill in real accounts, run the script,
+# then delete userlist.txt when you're done. userlist.txt is git-ignored
+# so it won't accidentally get committed.
+
+maria:ExamplePass123!
+joao:ExamplePass456!
+ana:ExamplePass789!
