@@ -1,0 +1,8 @@
+# Never commit real credential lists
+userlist.txt
+*.local.txt
+
+# OS/editor cruft
+.DS_Store
+Thumbs.db
+*.tmp
