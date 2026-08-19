@@ -7,7 +7,6 @@ echo It lists all users, allows the admin to select users and redirection option
 echo Inputs: Usernames, redirection choices (Desktop, Documents, or both).
 echo Outputs: Success or failure of folder creation, content copy, and redirection.
 echo No legal warranty from the author. Use at your own risk.
-echo    For more help: info@education-on.org
 echo.
 
 rem ASCII Header
@@ -19,7 +18,7 @@ echo. |  __/ (_| | (_| |  __/_____| | | | | ||  __/ |
 echo.  \___|\__,_|\__, |\___|     |_|_| |_|\__\___|_|
 echo.             |___/                              
 echo.
-echo.    --> edge-intel.com | education-on.org <--
+echo.    --> edge-intel.com <--
 echo.
 
 rem Check for admin privileges
