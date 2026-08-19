@@ -1,136 +1,92 @@
-
 # EducationOn — Toolkit for School IT Admins
 
-> Practical, low-overhead scripts and guides to keep school computer labs and teacher devices running smoothly.
+Practical, low-overhead scripts and guides to keep school computer labs and teacher devices running smoothly.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](#license)
-[![Platform](https://img.shields.io/badge/Platform-Windows-blue.svg)](#)
-[![Audience](https://img.shields.io/badge/Audience-K12%20IT%20Admins-8A2BE2.svg)](#)
+EducationOn provides small, auditable tools for common administrative tasks in school environments—especially where students share PCs and accounts, and where you need quick wins without a full AD/Intune rollout.
 
-**EducationOn** provides small, auditable tools for common administrative tasks in school environments—especially where students share PCs and accounts, and where you need quick wins without a full AD/Intune rollout.
+License: MIT | Platform: Windows | Audience: K12 IT Admins
 
----
+## What's inside
 
-## 📂 What’s inside
+```
+scripts/
+  folder-redirect/
+    RedirectFolders.bat        Redirect Desktop/Documents to local per-machine paths
+  local-user-provisioning/
+    CreateLocalUsers.ps1       Create local Windows accounts from a user:pass list
+    userlist.example.txt       Example input file, copy it, fill it in, never commit it
 
-- **RedirectFolders.bat**  
-  Redirects user shell folders (e.g., *Desktop*, *Documents*) to local paths per machine—useful for shared accounts and fast lab resets. Runs with elevation and prints a summary at the end.
+templates/
+  QRCode-template.xlsx         Pull-and-use spreadsheet for generating QR codes
+```
 
-- **WinUpdateServ.bat** (+ `readme-WinUpdateServ.txt`)  
-  Helper script for handling Windows Update service behavior in lab/classroom scenarios. See the companion `readme-WinUpdateServ.txt` for usage and caveats.
+**scripts/folder-redirect/RedirectFolders.bat**
+Redirects user shell folders (e.g., Desktop, Documents) to local paths per machine—useful for shared accounts and fast lab resets. Runs with elevation and prints a summary at the end.
 
-- **link to QRCode.xlsx**  
-  Spreadsheet template for generating QR codes (e.g., Wi-Fi join links, classroom rules, support contacts).
+**scripts/local-user-provisioning/CreateLocalUsers.ps1**
+Interactive PowerShell script that creates local Windows accounts (Home editions or machines without AD) from a username:password list, with an option to promote selected accounts to Administrator. Prints a run summary at the end.
 
-- **tools/**  
-  Staging area for additional scripts/utilities (to be documented as they are added).
+**templates/QRCode-template.xlsx**
+Spreadsheet template for generating QR codes (e.g., Wi-Fi join links, classroom rules, support contacts). Just download and open, usage is inside the file.
 
----
+New tools should be added as their own folder under scripts/, with a short usage note either inline in this README or as a README.md alongside the script.
 
-## 🎯 Why this exists (School context)
+## Why this exists (School context)
 
-- **Shared PCs & rotating users** — Keep student data local/per-device to avoid profile bloat and speed up logons.  
-- **Minimal infra required** — Helpful where there is no domain controller or where GPO/Intune isn’t feasible across all sites.  
-- **Auditable & simple** — Plain batch scripts that can be inspected, adapted, or rewritten in PowerShell.  
+Shared PCs and rotating users make it worth keeping student data local/per-device to avoid profile bloat and speed up logons. Most sites here run with minimal infra, so these tools help where there is no domain controller or where GPO/Intune isn't feasible everywhere. Everything is kept auditable and simple: plain batch/PowerShell scripts that can be inspected, adapted, or rewritten by any tech on the team.
 
----
+## Quick start
 
-## 🚀 Quick start
+Clone or download the repository:
 
-1. **Clone or download**
-   ```bash
-   git clone https://github.com/edge-intel/EducationOn
-   ```
-   Or download as ZIP from GitHub.
+git clone https://github.com/edge-intel/EducationOn
 
-2. **Run as Administrator**  
-   - Right-click the script (`RedirectFolders.bat` or `WinUpdateServ.bat`) → **Run as administrator**.  
-   - Follow on-screen prompts.
+Or download as ZIP from GitHub.
 
-3. **Test on a pilot PC first**  
-   Validate behavior with a non-critical machine (or VM) before broad rollout.
+Then run the script as Administrator. Right-click the script you need (e.g. scripts/folder-redirect/RedirectFolders.bat) and choose "Run as administrator". For the PowerShell script, open an elevated PowerShell prompt and run:
 
-> 💡 Tip: create a local admin-only USB with the scripts + a small change log so techs can execute consistent steps in classrooms.
+Set-ExecutionPolicy RemoteSigned -Scope Process -Force
+.\scripts\local-user-provisioning\CreateLocalUsers.ps1
 
----
+Follow the on-screen prompts, and test on a pilot PC or VM first before rolling out broadly.
 
-## 🛠 Usage notes
+Tip: create a local admin-only USB with the scripts plus a small change log so techs can execute consistent steps in classrooms.
+
+## Usage notes
 
 ### RedirectFolders.bat
-- **What it does**: Lists users on the device, lets you choose targets, then redirects selected folders (Desktop/Documents) to local machine paths. Copies existing content and updates the registry mappings.  
-- **Good for**: Shared accounts, exam stations, low-bandwidth sites, and quick “reset” workflows.  
-- **Log/summary**: The script prints a success/failure summary at the end.  
+What it does: lists users on the device, lets you choose targets, then redirects selected folders (Desktop/Documents) to local machine paths. Copies existing content and updates the registry mappings.
+Good for: shared accounts, exam stations, low-bandwidth sites, and quick "reset" workflows.
+Log/summary: the script prints a success/failure summary at the end.
 
-### WinUpdateServ.bat
-- **What it does**: Assists with Windows Update service behavior for lab PCs.  
-- **Documentation**: See `readme-WinUpdateServ.txt` for exact switches, modes, and safeguards.  
-- **Important**: Changes to Windows Update can have security implications—ensure compliance with your school’s patch policy.
+### CreateLocalUsers.ps1
+What it does: reads a username:password list (see userlist.example.txt), creates each account as a standard user, and optionally promotes selected accounts to Administrator. Prints a run summary (created / skipped / errors / promoted).
+Good for: quickly provisioning classroom or lab machines that aren't domain-joined.
+Security note: the input file holds plaintext passwords. Copy userlist.example.txt to userlist.txt (already git-ignored), fill it in locally, run the script, then delete userlist.txt. Never commit real credentials.
 
-### link to QRCode.xlsx
-- **Intuitive usage just look inside the file**
+### templates/QRCode-template.xlsx
+Intuitive usage, just download and look inside the file.
 
----
+## Contributing
 
-## 🤝 Contributing
+Fork the repo, create a feature branch, and commit small, reviewable changes. Include before/after notes and screenshots or log snippets where relevant. When opening a PR, describe the purpose of the change, the test steps or rollback instructions, and any policy or security implications.
 
-1. Fork the repo, create a feature branch, and commit small, reviewable changes.  
-2. Include **before/after notes** and screenshots/log snippets where relevant.  
-3. Open a PR with:  
-   - Purpose of the change  
-   - Test steps / rollback instructions  
-   - Any policy or security implications  
+See CONTRIBUTING.md for more detail.
 
----
+## Disclaimer
 
-## 🔐 Disclaimer
-
-These scripts are provided **as-is**, without warranty of any kind.  
-They make changes to user folders and/or Windows services — **always test first on non-production machines**.  
-By using them, you accept full responsibility for outcomes in your environment.
-
----
-
-## 📜 License
-
-This project is licensed under the **MIT License**. See [`LICENSE`](./LICENSE).
-
----
-
-## 🌐 Links
-
-- Project site: [https://education-on.org](https://education-on.org)  
-- Issues & support: use [GitHub Issues](../../issues) to report bugs or request features
-
-
-## 🇵🇹 Nota final (PT)
-
-Este repositório destina-se a equipas de TI escolares que precisam de soluções simples e auditáveis para gerir parques informáticos partilhados.  
-Se tiveres sugestões ou scripts úteis, contribui com um PR ou abre um *issue*. Obrigado!
-
+These scripts are provided as-is, without warranty of any kind. They make changes to user folders, Windows services, and/or local accounts, so always test first on non-production machines. By using them, you accept full responsibility for outcomes in your environment.
 
 ## License
 
-MIT License
+This project is licensed under the MIT License. See LICENSE.
 
-Copyright (c) 2024 Edge-Intel.com
+## Links
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Project site: https://education-on.org
+Issues and support: use GitHub Issues to report bugs or request features
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+## Nota final (PT)
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-**
-## Disclaimer
-**This script is provided as-is without any warranty. Use it at your own risk. The author is not responsible for any damage or data loss that may occur as a result of using this script.**
+Este repositório destina-se a equipas de TI escolares que precisam de soluções simples e auditáveis para gerir parques informáticos partilhados.
+Se tiveres sugestões ou scripts úteis, contribui com um PR ou abre um issue. Obrigado!
